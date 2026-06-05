@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Đặt lại mật khẩu</title>
+  <style>
+    body{margin:0;display:grid;place-items:center;height:100vh;background:#0b1020;font-family:Inter,system-ui}
+    .card{width:100%;max-width:420px;background:#111831;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;color:#e7ecf5}
+    h1{margin:0 0 12px 0;font-size:22px}
+    .muted{color:#91a0b6}
+    .group{display:grid;gap:6px;margin:10px 0}
+    input{background:#0e1530;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;color:#e7ecf5}
+    button{background:linear-gradient(135deg,#246bff,#15c2a7);border:0;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;width:100%;font-weight:700}
+    .alert{background:#3f2a2a;border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:10px;color:#ffd0d0;margin:10px 0}
+    .ok{background:#113f2a;color:#a7ffd0}
+    a{color:#9fd0ff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Đặt lại mật khẩu</h1>
+    <p class="muted">Nhập mật khẩu mới cho tài khoản của bạn.</p>
+    <div th:if="${error}" class="alert" th:text="${error}"></div>
+    <div th:if="${message}" class="alert ok" th:text="${message}"></div>
+    <form th:action="@{/reset}" method="post">
+      <input type="hidden" name="token" th:value="${token}">
+      <div class="group">
+        <label>Mật khẩu mới</label>
+        <div style="position:relative">
+          <input type="password" name="password" id="password" required minlength="6" style="padding-right:32px">
+          <button type="button" onclick="togglePassword()" aria-label="Hiện/ẩn mật khẩu" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#91a0b6;cursor:pointer;font-size:14px;width:24px;height:24px;line-height:24px;text-align:center">👁️</button>
+        </div>
+      </div>
+      <div class="group">
+        <label>Xác nhận mật khẩu</label>
+        <input type="password" name="confirmPassword" required minlength="6">
+      </div>
+      <button type="submit">Đặt lại mật khẩu</button>
+    </form>
+    <div style="margin-top:12px"><a th:href="@{/login}">Quay lại đăng nhập</a></div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const button = event.target;
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        button.textContent = '🙈';
+      } else {
+        passwordInput.type = 'password';
+        button.textContent = '👁️';
+      }
+    }
+  </script>
+</body>
+</html>
+
+

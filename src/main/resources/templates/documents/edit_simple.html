@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Chỉnh sửa tài liệu</title>
+  <style>
+    body{margin:0;font-family:Inter,system-ui;background:#0b1020;color:#e7ecf5}
+    .wrap{max-width:900px;margin:40px auto;padding:20px}
+    .card{background:#111831;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px}
+    .grid{display:grid;gap:10px}
+    .btn{padding:10px 14px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#0e1530;color:#e7ecf5;cursor:pointer}
+    a.btn{text-decoration:none;display:inline-block}
+    label{font-weight:600;margin-top:6px}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="wrap">
+    <div style="margin-bottom:12px"><a href="/documents" class="btn">← Quay lại</a></div>
+    <div class="card">
+      <h2>Chỉnh sửa: <span th:text="${doc.title}">Tài liệu</span></h2>
+      <form th:action="@{|/documents/${doc.id}|}" method="post" enctype="multipart/form-data" class="grid">
+        <label>Tiêu đề</label>
+        <input type="text" name="title" th:value="${doc.title}"/>
+        <label>Mô tả</label>
+        <textarea name="description" th:text="${doc.description}"></textarea>
+        <label>Thư mục/nhóm</label>
+        <select name="categorySelect">
+          <option value="" th:selected="${doc.category == null}">-- Không chọn --</option>
+          <option th:each="c : ${categories}" th:value="${c}" th:text="${c}" th:selected="${c == doc.category}"></option>
+        </select>
+        <input type="text" name="categoryNew" placeholder="Hoặc nhập mục mới"/>
+        <label>Thay tệp (tuỳ chọn)</label>
+        <input type="file" name="file"/>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn" type="submit">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+

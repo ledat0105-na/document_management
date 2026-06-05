@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Hướng dẫn sử dụng - DocManager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1020;--panel:#111831;--muted:#91a0b6;--text:#e7ecf5;--brand:#6ea8ff;--brand-2:#9df2d2;--line:rgba(255,255,255,.08);--radius:16px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";color:var(--text);background:linear-gradient(120deg,#0b1020 30%,#0a1a2a 100%)}
+    .container{max-width:1000px;margin:0 auto;padding:20px}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .dot{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .brand h1{font-size:22px;margin:0;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:#0e1530;color:var(--text);text-decoration:none;font-weight:600}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+    h2{margin:0 0 12px 0}
+    p{color:var(--muted)}
+    ol{margin:0 0 0 20px}
+    li{margin:8px 0}
+    .back{margin-top:12px}
+  </style>
+  <meta th:if="${_csrf != null}" th:name="_csrf" th:content="${_csrf.token}"/>
+  <meta th:if="${_csrf != null}" th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <script>
+    // Simple helper for POST logout respecting CSRF if present
+    function logout(){
+      const token = document.querySelector('meta[name="_csrf"]')?.content;
+      const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+      fetch('/logout',{method:'POST',headers: token && header ? {[header]: token} : {}}).then(()=>location.href='/login');
+    }
+  </script>
+  </head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1>Hướng dẫn sử dụng</h1>
+      </div>
+      <div>
+        <a href="/dashboard" class="btn">← Quay lại Dashboard</a>
+        <button onclick="logout()" class="btn" style="margin-left:8px">Đăng xuất</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>1. Đăng nhập</h2>
+      <ol>
+        <li>Truy cập trang đăng nhập và nhập email/mật khẩu.</li>
+        <li>Nếu quên mật khẩu, chọn "Quên mật khẩu" để đặt lại.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>2. Bảng điều khiển</h2>
+      <p>Xem nhanh tổng số tài liệu, thư mục và tài liệu đã lưu trữ.</p>
+      <ol>
+        <li>Nhấn "Vào quản lý tài liệu" để xem danh sách.</li>
+        <li>Nhấn "Vào quản lý thư mục" để quản lý thư mục.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>3. Quản lý tài liệu</h2>
+      <ol>
+        <li>Tạo mới: chọn nút tạo tài liệu và tải tệp lên.</li>
+        <li>Chỉnh sửa: mở tài liệu và chọn chỉnh sửa nội dung/thuộc tính.</li>
+        <li>Lưu trữ/Khôi phục: chuyển trạng thái tài liệu khi cần.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>4. Quản lý thư mục</h2>
+      <ol>
+        <li>Tạo thư mục mới để nhóm tài liệu theo chủ đề.</li>
+        <li>Di chuyển tài liệu vào/ra thư mục bằng các thao tác trên giao diện.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>5. Tìm kiếm và lọc</h2>
+      <p>Sử dụng ô tìm kiếm và bộ lọc để nhanh chóng tìm tài liệu, theo tên, loại, hoặc trạng thái.</p>
+    </section>
+
+    <section class="card">
+      <h2>6. Bảo mật và phiên làm việc</h2>
+      <ol>
+        <li>Hệ thống tự đăng xuất sau một thời gian không hoạt động.</li>
+        <li>Không chia sẻ tài khoản; đổi mật khẩu định kỳ.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>FAQ</h2>
+      <ol>
+        <li>Không upload được tệp? Kiểm tra dung lượng và định dạng cho phép.</li>
+        <li>Không thấy tài liệu? Dùng tìm kiếm hoặc kiểm tra bộ lọc.</li>
+        <li>Cần hỗ trợ thêm? Liên hệ quản trị hệ thống.</li>
+      </ol>
+    </section>
+
+    <div class="back">
+      <a href="/dashboard" class="btn">← Quay lại Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>
+
+

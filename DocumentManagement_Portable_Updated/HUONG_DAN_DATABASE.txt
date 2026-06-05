@@ -1,0 +1,47 @@
+========================================
+    HƯỚNG DẪN CẤU HÌNH DATABASE
+    DOCUMENT MANAGEMENT SYSTEM
+========================================
+
+🔧 CÁCH 1: SỬ DỤNG H2 DATABASE (ĐƠN GIẢN NHẤT)
+1. Chạy file: switch_to_h2.bat
+2. Chạy file: start_app_simple.bat
+3. Truy cập: http://127.0.0.1:8080
+4. Không cần cài đặt MySQL
+
+🔧 CÁCH 2: SỬ DỤNG MYSQL DATABASE
+1. Cài đặt MySQL Server
+2. Chạy file: switch_to_mysql.bat
+3. Sửa thông tin database trong application.properties:
+   - spring.datasource.username=YOUR_USERNAME
+   - spring.datasource.password=YOUR_PASSWORD
+4. Chạy file: start_app_simple.bat
+5. Truy cập: http://127.0.0.1:8080
+
+📋 THÔNG TIN DATABASE MẶC ĐỊNH:
+- Username: root
+- Password: lambieng
+- Database: document_management
+- Host: localhost
+- Port: 3306
+
+🔧 CÁCH SỬA THÔNG TIN DATABASE:
+1. Mở file: application.properties
+2. Tìm dòng:
+   spring.datasource.username=root
+   spring.datasource.password=lambieng
+3. Thay đổi theo database của bạn
+4. Lưu file và chạy lại ứng dụng
+
+⚠️ LƯU Ý:
+- H2 database: Không cần cài đặt gì thêm
+- MySQL database: Cần cài đặt MySQL Server
+- Backup thư mục 'data/' để bảo toàn dữ liệu H2
+
+🆘 XỬ LÝ LỖI:
+- Nếu lỗi kết nối MySQL: Kiểm tra MySQL Server đang chạy
+- Nếu lỗi H2: Chạy lại switch_to_h2.bat
+- Nếu lỗi port: Thay đổi server.port trong application.properties
+
+📞 HỖ TRỢ:
+Liên hệ nhà phát triển nếu cần hỗ trợ.

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title th:text="'Thư mục: ' + ${folderName}">Thư mục</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel: #111831;
+      --muted: #91a0b6;
+      --text: #e7ecf5;
+      --brand: #6ea8ff;
+      --brand-2: #9df2d2;
+      --line: rgba(255,255,255,.08);
+      --danger: #ff6b6b;
+      --warning: #ffb86b;
+      --success: #3bd28f;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:linear-gradient(120deg,#0b1020 30%,#0a1a2a 100%);
+    }
+    .app{display:grid;grid-template-columns:300px 1fr;gap:20px;min-height:100vh;padding:20px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .sidebar{padding:18px}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .brand .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .brand h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.3px}
+    .brand a{color:var(--text);text-decoration:none}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#0e1530;color:var(--text);text-decoration:none;font-weight:600;cursor:pointer}
+    .btn:hover{border-color:#26406c}
+    .btn.primary{background:linear-gradient(135deg,#246bff, #15c2a7);border-color:transparent}
+    .btn.ghost{background:transparent}
+
+    .section-title{margin:18px 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+    .menu{display:grid;gap:6px}
+    .menu a{padding:10px 12px;border-radius:10px;color:var(--text);text-decoration:none;display:flex;align-items:center;justify-content:space-between;border:1px solid transparent}
+    .menu a:hover{background:#0f1731;border-color:var(--line)}
+    .badge{font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+
+    .content{display:grid;grid-template-rows:auto 1fr;gap:16px}
+    header.topbar{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:14px 16px}
+    .search{flex:1;display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0e1530;border:1px solid var(--line);border-radius:12px}
+    .search input{flex:1;background:transparent;border:0;outline:none;color:var(--text)}
+    .search button{background:var(--brand);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer}
+
+    .toolbar{display:flex;align-items:center;gap:10px}
+    select.sort{appearance:none;background:#0e1530;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:14px;padding:16px}
+    @media (max-width:1100px){.app{grid-template-columns:1fr}.grid{grid-template-columns:repeat(auto-fill, minmax(280px, 1fr))}}
+    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+
+    .doc{padding:16px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 60%), #0f1731}
+    .doc .row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .doc h3{margin:6px 0 2px;font-size:16px}
+    .doc h3 a{color:#9fd0ff;text-decoration:none;font-weight:600}
+    .doc h3 a:hover{color:#c7f7e8;text-shadow:0 0 10px rgba(157,242,210,.25)}
+    .muted{color:var(--muted);font-size:12px}
+    .status{display:inline-flex;align-items:center;gap:8px}
+    .chip{padding:4px 8px;border-radius:999px;font-size:11px;border:1px solid var(--line)}
+    .chip.draft{background:#2a2442;color:#d1c7ff}
+    .chip.published{background:#113f2a;color:#a7ffd0}
+    .chip.archived{background:#3a2a2a;color:#ffd0d0}
+
+    .doc .actions{display:flex;gap:8px;align-items:center;flex-shrink:0;margin-top:4px}
+    .icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;background:#0e1530;cursor:pointer;text-decoration:none;color:var(--text)}
+    .icon-btn:hover{border-color:#284b77}
+    .icon-btn svg{width:18px;height:18px;fill:#cfe4ff}
+    .icon-btn:hover svg{fill:#ffffff}
+    .icon-btn.download{background:#1e3a5f;border-color:#246bff}
+    .icon-btn.edit{background:#1e3f2a;border-color:#28a745}
+    .icon-btn.delete{background:#3f2a2a;border-color:#dc3545}
+    
+
+    
+    .actions details{position:relative}
+    .actions summary{list-style:none}
+    .actions summary::-webkit-details-marker{display:none}
+    .actions .menu{position:absolute;right:0;top:42px;display:grid;grid-auto-rows:36px;grid-template-columns:36px;gap:8px;padding:10px;border-radius:12px;border:1px solid var(--line);background:#0f1731;box-shadow:var(--shadow);z-index:5}
+    .actions details[open] .menu{animation:fadeIn .12s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+    .pagination{display:flex;justify-content:center;gap:8px;margin-top:24px;padding:16px}
+    .pagination a, .pagination span{padding:8px 12px;border-radius:8px;text-decoration:none;border:1px solid var(--line);color:var(--text)}
+    .pagination .current{background:var(--brand);border-color:var(--brand)}
+
+    .empty{text-align:center;padding:48px 16px;color:var(--muted)}
+    .empty h2{color:var(--text);margin-bottom:16px}
+
+    
+    .folder-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--line);margin-bottom:16px}
+    .folder-title{display:flex;align-items:center;gap:12px}
+    .folder-title h1{font-size:24px;margin:0;color:var(--text)}
+    .folder-actions{display:flex;gap:8px;align-items:center}
+
+    
+    .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000}
+    .modal-content{background:var(--panel);border-radius:12px;padding:24px;min-width:400px;max-width:500px;border:1px solid var(--line)}
+    .modal-content h2{margin:0 0 20px 0;color:var(--text)}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;margin-bottom:8px;color:var(--text);font-weight:500}
+    .form-group input, .form-group select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px}
+    .form-group input:focus, .form-group select:focus{outline:none;border-color:var(--brand)}
+    .modal-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px}
+    .btn.danger{background:#dc3545;color:white;border-color:#dc3545}
+    .btn.danger:hover{background:#c82333;border-color:#bd2130}
+
+    
+    .i{font-style:normal;display:inline-block;line-height:1}
+    .i.add::before{content:"＋"}
+    .i.edit::before{content:"✎"}
+    .i.delete::before{content:"🗑"}
+    .i.download::before{content:"⬇"}
+    .i.search::before{content:"⌕"}
+    .i.folder::before{content:"📁"}
+    .i.move::before{content:"⇄"}
+
+    
+    .hint{padding:10px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+
+    
+    .toast{position:fixed;bottom:80px;right:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;box-shadow:0 8px 32px rgba(0,0,0,0.3);backdrop-filter:blur(10px);z-index:1001;transform:translateY(100%);transition:transform 0.3s ease;max-width:400px}
+    .toast.show{transform:translateY(0)}
+    .toast.success{border-left:4px solid #10b981;background:linear-gradient(90deg, rgba(16,185,129,0.1), var(--panel))}
+    .toast.error{border-left:4px solid #ef4444;background:linear-gradient(90deg, rgba(239,68,68,0.1), var(--panel))}
+    .toast .toast-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .toast .toast-icon{width:20px;height:20px}
+    .toast .toast-title{font-weight:600;color:var(--text)}
+    .toast .toast-message{color:var(--muted);font-size:14px;line-height:1.4}
+    .toast .toast-close{position:absolute;top:8px;right:8px;width:24px;height:24px;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center}
+    .toast .toast-close:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    
+    <aside class="sidebar card">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1><a href="/documents">DocManager</a></h1>
+      </div>
+      <a href="/documents/new" class="btn primary"><span class="i add"></span>Tạo văn bản</a>
+
+      <div class="section-title">Danh mục</div>
+      <nav class="menu">
+        <a href="/documents">Tất cả <span class="badge" th:text="${docPage.totalElements}">0</span></a>
+        <a href="/documents?showFolders=true">Thư mục</a>
+        <a href="/documents">Lưu trữ <span class="badge">0</span></a>
+      </nav>
+
+      <div class="section-title">Thư mục hiện tại</div>
+      <div class="menu">
+        <a th:href="@{/documents(category=${currentCategory})}" th:classappend="'active'">
+          <span class="i folder"></span>
+          <span th:text="${folderName}">Folder Name</span>
+        </a>
+      </div>
+
+      <div class="section-title">Hành động nhanh</div>
+      <div class="menu">
+        <a href="#" class="btn ghost" onclick="showCreateFolderModal()"><span class="i add"></span>Tạo thư mục</a>
+        <a href="/documents/new">Tải lên tệp <span class="badge">.pdf .docx</span></a>
+        <a href="/documents/export/all">Xuất ZIP <span class="badge">toàn bộ</span></a>
+      </div>
+
+      <div class="hint">Đang xem thư mục: <strong th:text="${folderName}">Folder</strong></div>
+    </aside>
+
+    
+    <main class="content card">
+      
+      <div class="folder-header">
+        <div class="folder-title">
+          <span class="i folder"></span>
+          <h1 th:text="${folderName}">Folder Name</h1>
+          <span class="badge" th:text="${docPage.totalElements + ' tệp'}">0 tệp</span>
+        </div>
+        <div class="folder-actions">
+          <a href="#" class="btn ghost" th:onclick="|editFolderName('${folderName}')|">
+            <span class="i edit"></span>Sửa tên thư mục
+          </a>
+          <a href="/documents?showFolders=true" class="btn ghost">← Quay lại</a>
+        </div>
+      </div>
+
+      <header class="topbar">
+        <div style="flex:1">
+          <h3 style="margin:0;color:var(--text)">Tài liệu trong thư mục "<span th:text="${folderName}">Folder</span>"</h3>
+        </div>
+        <div class="toolbar">
+          <a href="/documents/export/all" class="btn ghost">Xuất ZIP</a>
+        </div>
+      </header>
+
+      
+      <section class="grid" th:if="${!docPage.empty}">
+        <article class="doc" th:each="d : ${docPage.content}" th:attr="data-doc-id=${d.id}">
+          <div class="row">
+            <div>
+              <h3><a th:href="@{|/documents/${d.id}|}" th:text="${d.title}">Title</a></h3>
+              <div class="muted">
+                <span th:text="${#dates.format(T(java.util.Date).from(d.updatedAt), 'dd/MM/yyyy HH:mm')}">Date</span> <br>
+                •
+                <span th:text="${d.originalFilename}">Filename</span>
+              </div>
+              <div class="muted" th:if="${d.category}">
+                <span class="chip">[[${d.category}]]</span>
+              </div>
+              <div style="color:#cfe4ff;font-size:13px;opacity:.9;margin-top:4px" th:if="${d.description}">
+                <strong style="color:#9db8ff">Mô tả:</strong>
+                <span th:text="${#strings.length(d.description) > 120 ? #strings.substring(d.description,0,120) + '…' : d.description}">Description</span>
+              </div>
+            </div>
+            <div class="actions">
+              <span class="chip published">Hoạt động</span>
+              <details>
+                <summary>
+                  <a class="icon-btn" title="Tùy chọn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="5" r="2"/>
+                      <circle cx="12" cy="12" r="2"/>
+                      <circle cx="12" cy="19" r="2"/>
+                    </svg>
+                  </a>
+                </summary>
+                <div class="menu">
+                  
+                  <a th:href="@{|/documents/${d.id}|}" class="icon-btn" title="Chi tiết">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    </svg>
+                  </a>
+                  
+                  <a th:href="@{|/documents/${d.id}|}" class="icon-btn edit" title="Sửa"><span class="i edit"></span></a>
+                  
+                  <a href="#" class="icon-btn move" title="Chuyển thư mục" th:onclick="|showMoveModal(${d.id}, '${d.title}', '${folderName}')|">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                  </a>
+                  
+                  <form th:action="@{|/documents/${d.id}/delete|}" method="post" class="js-delete-form">
+                    <button type="submit" class="icon-btn delete" title="Xóa"><span class="i delete"></span></button>
+                  </form>
+                  
+                  <a th:href="@{|/documents/${d.id}/download|}" class="icon-btn download" title="Xuất tệp"><span class="i download"></span></a>
+                </div>
+              </details>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="pagination" th:if="${docPage.totalPages > 1}">
+        <a th:if="${!docPage.first}" th:href="@{|/documents/folders/${folderName}?page=${docPage.number-1}|}">← Trước</a>
+        <span th:each="i : ${#numbers.sequence(0, docPage.totalPages - 1)}">
+          <a th:if="${i != docPage.number}" th:href="@{|/documents/folders/${folderName}?page=${i}|}" th:text="${i + 1}">1</a>
+          <span th:if="${i == docPage.number}" class="current" th:text="${i + 1}">1</span>
+        </span>
+        <a th:if="${!docPage.last}" th:href="@{|/documents/folders/${folderName}?page=${docPage.number+1}|}">Sau →</a>
+      </div>
+
+      <div class="empty" th:if="${docPage.empty}">
+        <h2>Thư mục trống</h2>
+        <p>Chưa có tài liệu nào trong thư mục "<span th:text="${folderName}">Folder</span>"</p>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+          <a href="/documents/new" class="btn primary"><span class="i add"></span>Tạo tài liệu đầu tiên</a>
+          <a href="/documents?showFolders=true" class="btn ghost">
+            <span style="font-size: 16px;">←</span>
+            Trở về danh sách thư mục
+          </a>
+        </div>
+      </div>
+
+      
+      <div style="text-align: center; margin-top: 32px; padding: 20px;">
+        <a href="/documents?showFolders=true" class="btn ghost" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 14px;">
+          <span style="font-size: 16px;">←</span>
+          Trở về danh sách thư mục
+        </a>
+      </div>
+    </main>
+  </div>
+
+  
+
+  
+  <div id="renameModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Đổi tên thư mục</h2>
+      <form id="renameForm" method="post">
+        <div class="form-group">
+          <label>Tên thư mục hiện tại:</label>
+          <input type="text" id="currentFolderName" readonly style="background:#2a2a2a;color:var(--muted)">
+        </div>
+        <div class="form-group">
+          <label>Tên thư mục mới:</label>
+          <input type="text" id="newFolderName" name="newName" placeholder="Nhập tên mới cho thư mục..." required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" onclick="hideRenameModal()">Hủy</button>
+          <button type="submit" class="btn primary">Đổi tên</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  
+  <div id="createFolderModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Tạo thư mục mới</h2>
+      <form id="createFolderForm" method="post">
+        <div class="form-group">
+          <label>Tên thư mục mới:</label>
+          <input type="text" id="createFolderName" name="folderName" placeholder="Nhập tên thư mục..." required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" onclick="hideCreateFolderModal()">Hủy</button>
+          <button type="submit" class="btn primary">Tạo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  
+  <div id="moveModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Chuyển tài liệu sang thư mục khác</h2>
+      <form id="moveForm" method="post">
+        <div class="form-group">
+          <label>Tài liệu:</label>
+          <input type="text" id="documentTitle" readonly style="background:#2a2a2a;color:var(--muted)">
+        </div>
+        <div class="form-group">
+          <label>Chuyển sang thư mục:</label>
+          <select name="newCategory" required>
+            <option value="">-- Chọn thư mục --</option>
+            <option th:each="cat : ${allCategories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == currentCategory}">Category</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" onclick="hideMoveModal()">Hủy</button>
+          <button type="submit" class="btn primary">Chuyển</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  
+  <div id="toastContainer"></div>
+
+  <script src="/js/toast.js"></script>
+  <script>
+    // Toast notification system
+    // showToast function is now loaded from toast.js
+
+    function editFolderName(oldName) {
+      // Set current folder name in modal
+      document.getElementById('currentFolderName').value = oldName;
+      document.getElementById('newFolderName').value = oldName;
+      document.getElementById('newFolderName').focus();
+      document.getElementById('newFolderName').select();
+      
+      // Set form action
+      document.getElementById('renameForm').action = `/documents/folders/${encodeURIComponent(oldName)}/rename`;
+      
+      // Show modal
+      document.getElementById('renameModal').style.display = 'flex';
+    }
+
+    function hideRenameModal() {
+      document.getElementById('renameModal').style.display = 'none';
+      document.getElementById('renameForm').reset();
+    }
+
+    function showCreateFolderModal() {
+      document.getElementById('createFolderForm').action = '/documents/folders';
+      document.getElementById('createFolderModal').style.display = 'flex';
+      setTimeout(() => document.getElementById('createFolderName').focus(), 0);
+    }
+
+    function hideCreateFolderModal() {
+      document.getElementById('createFolderModal').style.display = 'none';
+      document.getElementById('createFolderForm').reset();
+    }
+
+    function showMoveModal(documentId, documentTitle, currentCategory) {
+      document.getElementById('documentTitle').value = documentTitle;
+      document.getElementById('moveForm').action = `/documents/${documentId}/move`;
+      document.getElementById('moveModal').style.display = 'flex';
+    }
+
+    function hideMoveModal() {
+      document.getElementById('moveModal').style.display = 'none';
+      document.getElementById('moveForm').reset();
+    }
+
+    
+
+    // Handle rename form submission
+    document.getElementById('renameForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const newName = formData.get('newName');
+      const oldName = this.action.split('/').pop();
+      
+      if (!newName || newName.trim() === '') {
+        showToast('error', 'Lỗi', 'Vui lòng nhập tên thư mục mới');
+        return;
+      }
+      
+      if (newName.trim() === oldName) {
+        showToast('error', 'Lỗi', 'Tên mới phải khác tên hiện tại');
+        return;
+      }
+      
+      // Check for duplicate folder names
+      const existingFolderNames = Array.from(document.querySelectorAll('.folder-card h3'))
+        .map(el => el.textContent.trim())
+        .filter(name => name !== oldName);
+      
+      if (existingFolderNames.includes(newName.trim())) {
+        showToast('error', 'Lỗi', `Tên thư mục "${newName.trim()}" đã tồn tại. Vui lòng chọn tên khác.`);
+        return;
+      }
+      
+      // Show loading state
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Đang xử lý...';
+      submitBtn.disabled = true;
+      
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Show success toast
+          showToast('success', 'Thành công', data.message);
+          
+          // Update folder name in the UI
+          const newName = formData.get('newName');
+          document.querySelector('h1').textContent = newName;
+          document.querySelector('.topbar h3 span').textContent = newName;
+          
+          // Update page title
+          document.title = `Thư mục ${newName} - Quản lý tài liệu`;
+          
+          // Update URL to reflect new folder name
+          const newUrl = `/documents/folder/${encodeURIComponent(newName)}`;
+          window.history.replaceState({}, '', newUrl);
+          
+          // Close modal
+          hideRenameModal();
+        } else {
+          showToast('error', 'Lỗi', data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast('error', 'Lỗi', 'Có lỗi xảy ra khi đổi tên thư mục');
+      })
+      .finally(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      });
+    });
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const renameModal = document.getElementById('renameModal');
+      const createFolderModal = document.getElementById('createFolderModal');
+      const moveModal = document.getElementById('moveModal');
+      if (event.target === renameModal) hideRenameModal();
+      if (event.target === createFolderModal) hideCreateFolderModal();
+      if (event.target === moveModal) hideMoveModal();
+    }
+
+    // Handle Escape key to close modals
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        hideRenameModal();
+        hideCreateFolderModal();
+        hideMoveModal();
+      }
+    });
+
+    // Intercept delete to update counts and UI instantly
+    document.addEventListener('submit', function(e){
+      const form = e.target;
+      if (form.classList && form.classList.contains('js-delete-form')) {
+        e.preventDefault();
+        if (!confirm('Xóa tài liệu này?')) return;
+
+        const article = form.closest('article.doc');
+        const listGrid = document.querySelector('section.grid');
+        const headerBadge = document.querySelector('.folder-title .badge');
+        const allBadge = document.querySelector('.sidebar .menu a[href="/documents"] .badge');
+
+        fetch(form.action, { method: 'POST' })
+          .then(res => {
+            if (!res.ok) throw new Error('Delete failed');
+            // Remove item from DOM
+            if (article) article.remove();
+
+            // Recount remaining items in current view
+            const remaining = document.querySelectorAll('article.doc').length;
+            if (headerBadge) headerBadge.textContent = remaining + ' tệp';
+
+            // Toggle empty state
+            const emptyBlock = document.querySelector('.empty');
+            if (remaining === 0) {
+              if (listGrid) listGrid.style.display = 'none';
+              if (emptyBlock) emptyBlock.style.display = 'block';
+            }
+
+            // Update sidebar total if available (decrement by 1)
+            if (allBadge) {
+              const current = parseInt(allBadge.textContent.trim(), 10);
+              if (!Number.isNaN(current) && current > 0) allBadge.textContent = String(current - 1);
+            }
+
+            // Toast
+            try { showToast('success', 'Đã xóa', 'Tài liệu đã được xóa.'); } catch(_) {}
+          })
+          .catch(err => {
+            console.error(err);
+            try { showToast('error', 'Lỗi', 'Không thể xóa tài liệu.'); } catch(_) { alert('Không thể xóa tài liệu.'); }
+          });
+      }
+      // handle create folder submit
+      if (form.id === 'createFolderForm') {
+        e.preventDefault();
+        const name = (document.getElementById('createFolderName').value || '').trim();
+        if (!name) {
+          try { showToast('error', 'Lỗi', 'Vui lòng nhập tên thư mục'); } catch(_) {}
+          return;
+        }
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Đang tạo...';
+        submitBtn.disabled = true;
+
+        const body = new URLSearchParams();
+        body.append('folderName', name);
+        fetch('/documents/folders', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body })
+          .then(res => {
+            if (!res.ok) throw new Error('Create failed');
+            try { showToast('success', 'Thành công', 'Đã tạo thư mục'); } catch(_) {}
+            hideCreateFolderModal();
+            // Ở trang chi tiết thư mục: không chuyển trang
+          })
+          .catch(err => {
+            console.error(err);
+            try { showToast('error', 'Lỗi', 'Không thể tạo thư mục'); } catch(_) { alert('Không thể tạo thư mục'); }
+          })
+          .finally(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          });
+      }
+      // handle move document submit
+      if (form.id === 'moveForm') {
+        e.preventDefault();
+        const select = form.querySelector('select[name="newCategory"]');
+        const newCat = select ? select.value : '';
+        if (!newCat) { try { showToast('error','Lỗi','Vui lòng chọn thư mục'); } catch(_) {} return; }
+
+        const body = new URLSearchParams();
+        body.append('newCategory', newCat);
+
+        fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body })
+          .then(res => {
+            if (!res.ok) return res.text().then(t => { throw new Error(t || 'Move failed'); });
+          })
+          .then(() => {
+            // Xóa thẻ bài khỏi danh sách hiện tại
+            const docId = form.action.split('/').slice(-2)[0];
+            const article = document.querySelector(`article.doc[data-doc-id="${docId}"]`);
+            if (article) article.remove();
+            // Cập nhật badge số lượng
+            const headerBadge = document.querySelector('.folder-title .badge');
+            const remaining = document.querySelectorAll('article.doc').length;
+            if (headerBadge) headerBadge.textContent = remaining + ' tệp';
+            // Nếu hết tài liệu thì hiện empty
+            const listGrid = document.querySelector('section.grid');
+            const emptyBlock = document.querySelector('.empty');
+            if (remaining === 0) { if (listGrid) listGrid.style.display = 'none'; if (emptyBlock) emptyBlock.style.display = 'block'; }
+            hideMoveModal();
+            try { showToast('success','Thành công','Đã chuyển tài liệu'); } catch(_) {}
+          })
+          .catch(err => { console.error(err); try { showToast('error','Lỗi','Không thể chuyển tài liệu'); } catch(_) { alert('Không thể chuyển tài liệu'); } });
+      }
+    });
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Quản lý tài liệu</title>
+  <link rel="stylesheet" href="/css/toast.css">
+  <style>
+    body {max-width: 1000px; margin: 24px auto; font-family: Arial;}
+    header {display:flex; justify-content: space-between; align-items:center;}
+    nav a {margin-right:10px;}
+    table {width: 100%; border-collapse: collapse;}
+    th, td {border:1px solid #eee; padding:8px; text-align:left;}
+    .btn {padding:6px 10px; border:1px solid #ccc; border-radius:6px; text-decoration:none;}
+    .danger {color:#c00}
+    form.inline {display:inline}
+  </style>
+</head>
+<body>
+<header>
+  <h2><a th:href="@{/documents}">Quản lý tài liệu</a></h2>
+  <nav>
+    <a class="btn" th:href="@{/documents}">Danh sách</a>
+    <a class="btn" th:href="@{/documents/new}">Tạo mới</a>
+  </nav>
+</header>
+<hr/>
+<main>
+  <div th:fragment="content">
+  </div>
+</main>
+<footer><hr/>© Quản lý tài liệu</footer>
+</body>
+</html>
+
+

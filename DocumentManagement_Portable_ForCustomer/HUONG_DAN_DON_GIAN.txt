@@ -1,0 +1,48 @@
+========================================
+    HƯỚNG DẪN SỬ DỤNG ĐƠN GIẢN
+    DOCUMENT MANAGEMENT SYSTEM
+========================================
+
+🚀 CÁCH SỬ DỤNG (CỰC KỲ ĐƠN GIẢN):
+
+1. Chạy file: start_app_simple.bat
+2. Mở trình duyệt: http://localhost:8080
+3. Sử dụng ứng dụng bình thường
+
+📋 YÊU CẦU:
+- Windows 10/11
+- Java 17+ (tải từ: https://adoptium.net/)
+
+🔧 CÀI ĐẶT JAVA (NẾU CHƯA CÓ):
+1. Truy cập: https://adoptium.net/
+2. Tải Java 17 cho Windows
+3. Cài đặt Java
+4. Chạy lại ứng dụng
+
+📁 CẤU TRÚC THƯ MỤC:
+- start_app_simple.bat        : Chạy ứng dụng (CHÍNH)
+- application.properties       : Cấu hình database
+- document_management-*.jar    : File ứng dụng
+- data/                       : Database (tự động tạo)
+- storage/                    : File upload (tự động tạo)
+
+🌐 TRUY CẬP:
+- URL: http://localhost:8080
+- Port: 8080
+
+⚠️ LƯU Ý:
+- Đảm bảo port 8080 không bị sử dụng
+- File upload lưu trong thư mục 'storage/'
+- Backup thư mục 'data/' để bảo toàn dữ liệu
+
+🆘 XỬ LÝ LỖI:
+- Nếu báo "Java chưa được cài đặt": Cài đặt Java từ https://adoptium.net/
+- Nếu port 8080 bị chiếm: Đóng ứng dụng khác đang dùng port này
+- Nếu ứng dụng không chạy: Kiểm tra Java version (cần Java 17+)
+
+📞 HỖ TRỢ:
+Liên hệ nhà phát triển nếu cần hỗ trợ.
+
+========================================
+    CHÚC BẠN SỬ DỤNG VUI VẺ!
+========================================

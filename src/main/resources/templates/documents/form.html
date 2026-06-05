@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/></head>
+<body th:with="content=~{::content}" th:replace="~{_layout :: layout(${content})}">
+<div th:fragment="content">
+  <h3>Thêm tài liệu mới</h3>
+  <form th:action="@{/documents}" th:object="${doc}" method="post" enctype="multipart/form-data">
+    <div>
+      <label>Tiêu đề</label>
+      <input th:field="*{title}"/>
+      <div class="danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+    </div>
+    <div>
+      <label>Mô tả</label>
+      <textarea th:field="*{description}" rows="4"></textarea>
+      <div class="danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+    </div>
+    <div>
+      <label>Chọn tệp</label>
+      <input type="file" name="file" required/>
+    </div>
+    <button type="submit" class="btn">Lưu</button>
+    <a th:href="@{/documents}" class="btn">Hủy</a>
+  </form>
+</div>
+</body>
+</html>
+
+

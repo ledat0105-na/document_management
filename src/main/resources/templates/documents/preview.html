@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Xem tệp</title>
+  <style>
+    body{margin:0;background:#0b1020;color:#e7ecf5;font-family:Inter,system-ui}
+    .bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(10,14,30,.95);position:sticky;top:0;z-index:2}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#0e1530;color:#e7ecf5;text-decoration:none}
+    .viewer{height:calc(100vh - 56px);}
+    .viewer iframe{width:100%;height:100%;border:0}
+    .viewer img{max-width:100%;max-height:100%;display:block;margin:0 auto}
+    .center{display:grid;place-items:center;height:100%;color:#a9b7d0}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bar">
+    <a th:href="@{|/documents/${doc.id}?page=${backPage}&category=${backCategory}&q=${backQ}|}" class="btn">← Quay lại</a>
+    <div th:text="${doc.originalFilename}">file</div>
+    <a th:href="@{|/documents/${doc.id}/download|}" class="btn">Tải xuống</a>
+  </div>
+  <div class="viewer" id="viewer">
+    <div class="center">Đang tải xem trước…</div>
+  </div>
+  <script src="https://unpkg.com/docx-preview@0.3.2/dist/docx-preview.min.js"></script>
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    (function(){
+      const fileName =  null;
+      const storedFileName =  null;
+      const url =  '';
+      
+      // Use originalFilename if available, otherwise use storedFilename, otherwise fallback
+      let actualFileName = fileName || storedFileName || 'unknown_file';
+      console.log('Raw fileName from backend:', fileName);
+      console.log('Raw storedFileName from backend:', storedFileName);
+      console.log('Using fileName:', actualFileName);
+      
+      // Better extension parsing - handle files with multiple dots
+      let ext = actualFileName.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
+      const viewer = document.getElementById('viewer');
+
+      function set(el){ viewer.innerHTML=''; viewer.appendChild(el); }
+      
+      // Debug info
+      console.log('Final File:', actualFileName, 'Extension:', ext, 'URL:', url);
+      
+      // Fallback: if extension is empty or invalid, try to detect from filename
+      if(!ext || ext.length > 4){
+        const filenameLower = actualFileName.toLowerCase();
+        if(filenameLower.includes('excel') || filenameLower.includes('xls')){
+          console.log('Detected Excel file from filename');
+          ext = 'xls';
+        } else if(filenameLower.includes('word') || filenameLower.includes('docx')){
+          console.log('Detected Word file from filename');
+          ext = 'docx';
+        }
+      }
+
+      if(['pdf'].includes(ext)){
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        set(iframe);
+      } else if(['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext)){
+        const img = document.createElement('img');
+        img.src = url;
+        set(img);
+      } else if(['docx'].includes(ext)){
+        console.log('Processing DOCX file:', actualFileName);
+        const container = document.createElement('div');
+        container.style.background = '#0e1530';
+        container.style.padding = '16px';
+        container.style.height = '100%';
+        container.style.overflow = 'auto';
+        container.style.color = '#e7ecf5';
+        set(container);
+        
+        // Wait for docx-preview to load
+        function processDocx(){
+          if(typeof window.docx === 'undefined'){
+            container.innerHTML = '<div class="center">⏳ Đang tải docx-preview...</div>';
+            setTimeout(processDocx, 100);
+            return;
+          }
+          
+          console.log('docx-preview loaded, fetching file...');
+          container.innerHTML = '<div class="center">📄 Đang xử lý file Word...</div>';
+          
+          fetch(url).then(r=>r.blob()).then(blob=>{
+            console.log('File fetched, rendering DOCX...');
+            window.docx.renderAsync(blob, container, null, {
+              className: 'docx', 
+              inWrapper: true,
+              useBase64URL: false
+            }).then(()=>{
+              console.log('DOCX rendered successfully');
+            }).catch(e=>{
+              console.error('Error rendering DOCX:', e);
+              container.innerHTML='<div class="center">❌ Không thể hiển thị DOCX. Vui lòng tải xuống.</div>';
+            });
+          }).catch(e=>{
+            console.error('Error fetching DOCX:', e);
+            container.innerHTML='<div class="center">❌ Không thể tải tệp.</div>';
+          });
+        }
+        
+        processDocx();
+      } else if(['xlsx', 'xls'].includes(ext)){
+        // Excel files - use SheetJS
+        console.log('Processing Excel file:', actualFileName);
+        const container = document.createElement('div');
+        container.style.background = '#0e1530';
+        container.style.padding = '16px';
+        container.style.height = '100%';
+        container.style.overflow = 'auto';
+        container.style.color = '#e7ecf5';
+        set(container);
+        
+        // Wait for XLSX to load
+        function processExcel(){
+          if(typeof XLSX === 'undefined'){
+            container.innerHTML = '<div class="center">⏳ Đang tải SheetJS...</div>';
+            setTimeout(processExcel, 100);
+            return;
+          }
+          
+          console.log('XLSX loaded, fetching file...');
+          container.innerHTML = '<div class="center">📊 Đang xử lý file Excel...</div>';
+          
+          fetch(url).then(r=>r.arrayBuffer()).then(buffer=>{
+            console.log('File fetched, parsing...');
+            try {
+            const workbook = XLSX.read(buffer, {type: 'array'});
+            let html = '<h3 style="margin-bottom:16px;color:#9fd0ff">📊 ' + actualFileName + '</h3>';
+              
+              workbook.SheetNames.forEach(sheetName => {
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                
+                if(jsonData.length > 0){
+                  html += '<div style="margin-bottom:24px">';
+                  html += '<h4 style="color:#29d9a1;margin-bottom:8px">📋 ' + sheetName + '</h4>';
+                  html += '<table style="width:100%;border-collapse:collapse;background:#111831;border-radius:8px;overflow:hidden">';
+                  
+                  jsonData.slice(0, 20).forEach((row, i) => {
+                    html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1)">';
+                    row.forEach(cell => {
+                      const cellStyle = i === 0 ? 'background:#1a2332;font-weight:600;color:#9fd0ff' : 'background:#111831';
+                      html += '<td style="padding:8px 12px;border-right:1px solid rgba(255,255,255,0.05);' + cellStyle + '">' + (cell || '') + '</td>';
+                    });
+                    html += '</tr>';
+                  });
+                  
+                  if(jsonData.length > 20){
+                    html += '<tr><td colspan="' + Math.max(...jsonData.map(r=>r.length)) + '" style="padding:12px;text-align:center;color:#91a0b6;background:#0f1731">... và ' + (jsonData.length - 20) + ' dòng khác</td></tr>';
+                  }
+                  
+                  html += '</table></div>';
+                }
+              });
+              
+              container.innerHTML = html;
+              console.log('Excel rendered successfully');
+            } catch(e){
+              console.error('Error parsing Excel:', e);
+              container.innerHTML = '<div class="center">❌ Lỗi khi đọc file Excel. Vui lòng tải xuống.</div>';
+            }
+          }).catch(e=>{
+            console.error('Error fetching Excel:', e);
+            container.innerHTML = '<div class="center">❌ Không thể tải file Excel.</div>';
+          });
+        }
+        
+        processExcel();
+      } else if(['pptx', 'ppt'].includes(ext)){
+        // PowerPoint - show basic info
+        const container = document.createElement('div');
+        container.style.background = '#0e1530';
+        container.style.padding = '32px';
+        container.style.height = '100%';
+        container.style.overflow = 'auto';
+        container.style.color = '#e7ecf5';
+        container.style.textAlign = 'center';
+        set(container);
+        
+        container.innerHTML = `
+          <div style="font-size:48px;margin-bottom:16px">📊</div>
+          <h3 style="color:#9fd0ff;margin-bottom:16px">PowerPoint Preview</h3>
+          <p style="color:#91a0b6;margin-bottom:24px">Tệp: <strong>${actualFileName}</strong></p>
+          <div style="background:#111831;padding:20px;border-radius:12px;margin-bottom:20px">
+            <p style="color:#29d9a1;margin-bottom:8px">✨ Tính năng đang phát triển</p>
+            <p style="color:#91a0b6;font-size:14px">Hiện tại chưa hỗ trợ xem trực tiếp PowerPoint. Vui lòng tải xuống để xem.</p>
+          </div>
+          <a href="${url.replace('/view', '/download')}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#246bff, #15c2a7);border-radius:12px;color:white;text-decoration:none;font-weight:600">
+            ⬇️ Tải xuống
+          </a>
+        `;
+      } else if(['txt','csv','json','md','log','xml','html','css','js'].includes(ext)){
+        fetch(url).then(r=>r.text()).then(text=>{
+          const pre = document.createElement('pre');
+          pre.style.whiteSpace='pre-wrap';
+          pre.style.padding='16px';
+          pre.style.background='#0e1530';
+          pre.style.color='#e7ecf5';
+          pre.style.fontFamily='Monaco, Consolas, monospace';
+          pre.style.fontSize='14px';
+          pre.style.lineHeight='1.5';
+          pre.textContent = text;
+          set(pre);
+        }).catch(()=>{viewer.innerHTML='<div class="center">Không thể hiển thị nội dung.</div>';});
+      } else {
+        // Fallback for other formats
+        const container = document.createElement('div');
+        container.style.background = '#0e1530';
+        container.style.padding = '32px';
+        container.style.height = '100%';
+        container.style.overflow = 'auto';
+        container.style.color = '#e7ecf5';
+        container.style.textAlign = 'center';
+        set(container);
+        
+        const iconMap = {
+          'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
+          'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
+          'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
+          'exe': '⚙️', 'msi': '⚙️', 'deb': '⚙️',
+          'default': '📄'
+        };
+        
+        const icon = iconMap[ext] || iconMap['default'];
+        
+        container.innerHTML = `
+          <div style="font-size:48px;margin-bottom:16px">${icon}</div>
+          <h3 style="color:#9fd0ff;margin-bottom:16px">Định dạng: ${ext.toUpperCase()}</h3>
+          <p style="color:#91a0b6;margin-bottom:24px">Tệp: <strong>${actualFileName}</strong></p>
+          <div style="background:#111831;padding:20px;border-radius:12px;margin-bottom:20px">
+            <p style="color:#ffbb33;margin-bottom:8px">ℹ️ Thông tin</p>
+            <p style="color:#91a0b6;font-size:14px">Định dạng này chưa hỗ trợ xem trực tiếp. Vui lòng tải xuống để sử dụng.</p>
+          </div>
+          <a href="${url.replace('/view', '/download')}" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,#246bff, #15c2a7);border-radius:12px;color:white;text-decoration:none;font-weight:600">
+            ⬇️ Tải xuống
+          </a>
+        `;
+      }
+    })();
+  </script>
+</body>
+</html>
+
+
+
+

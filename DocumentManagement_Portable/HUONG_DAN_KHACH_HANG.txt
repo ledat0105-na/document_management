@@ -1,0 +1,96 @@
+========================================
+    HƯỚNG DẪN CHO KHÁCH HÀNG
+    DOCUMENT MANAGEMENT SYSTEM
+========================================
+
+🎯 KHÁCH HÀNG ĐÃ CÓ MYSQL - CHẠY NGAY!
+
+📋 YÊU CẦU:
+- Windows 10/11
+- Java 17+ (tải từ: https://adoptium.net/)
+- MySQL Server (khách hàng đã có)
+
+🚀 CÁCH CHẠY (3 BƯỚC ĐƠN GIẢN):
+
+BƯỚC 1: Chuẩn bị MySQL
+- Đảm bảo MySQL Server đang chạy
+- Tạo database: CREATE DATABASE document_management;
+- Hoặc để ứng dụng tự tạo (khuyến nghị)
+
+BƯỚC 2: Chọn cấu hình MySQL
+- Chạy file: switch_to_mysql.bat
+- (Hoặc copy application_mysql.properties thành application.properties)
+
+BƯỚC 3: Chạy ứng dụng
+- Chạy file: start_app_simple.bat
+- Mở trình duyệt: http://localhost:8080
+
+========================================
+    THÔNG TIN DATABASE
+========================================
+
+🔧 CẤU HÌNH MYSQL:
+- Host: localhost
+- Port: 3306
+- Database: document_management
+- Username: root
+- Password: lambieng
+
+📝 NẾU CẦN THAY ĐỔI PASSWORD:
+1. Mở file: application.properties
+2. Sửa dòng: spring.datasource.password=lambieng
+3. Thay "lambieng" bằng password MySQL của bạn
+
+========================================
+    TRUY CẬP ỨNG DỤNG
+========================================
+
+🌐 URL: http://localhost:8080
+👤 Tài khoản admin mặc định:
+   - Email: admin@example.com
+   - Password: admin123
+
+========================================
+    XỬ LÝ LỖI THƯỜNG GẶP
+========================================
+
+❌ LỖI "Java chưa được cài đặt":
+✅ Giải pháp: Tải và cài Java 17 từ https://adoptium.net/
+
+❌ LỖI "Port 8080 đã được sử dụng":
+✅ Giải pháp: Đóng ứng dụng khác đang dùng port 8080
+
+❌ LỖI "Cannot connect to MySQL":
+✅ Giải pháp: 
+   - Kiểm tra MySQL Server đang chạy
+   - Kiểm tra username/password trong application.properties
+   - Kiểm tra database "document_management" đã tồn tại
+
+❌ LỖI "Database does not exist":
+✅ Giải pháp: Tạo database bằng lệnh:
+   CREATE DATABASE document_management;
+
+========================================
+    CẤU TRÚC THƯ MỤC
+========================================
+
+📁 Các file quan trọng:
+- start_app_simple.bat           : Chạy ứng dụng
+- switch_to_mysql.bat           : Chuyển sang MySQL
+- application.properties        : Cấu hình database
+- document_management-*.jar     : File ứng dụng
+- storage/                      : Thư mục lưu file upload
+- data/                         : Database H2 (nếu dùng H2)
+
+========================================
+    LIÊN HỆ HỖ TRỢ
+========================================
+
+Nếu gặp vấn đề, liên hệ nhà phát triển với thông tin:
+- Lỗi cụ thể
+- Thông tin MySQL (version, cấu hình)
+- Log lỗi (nếu có)
+
+========================================
+    CHÚC BẠN SỬ DỤNG THÀNH CÔNG!
+========================================

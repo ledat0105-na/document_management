@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Quản lý tài khoản</title>
+  <style>
+    body{margin:0;font-family:Inter,system-ui;background:#0b1020;color:#e7ecf5}
+    .container{max-width:900px;margin:40px auto;padding:20px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    a,button{color:#e7ecf5}
+    .btn{padding:8px 12px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#111831;cursor:pointer}
+    .danger{background:#dc3545;border-color:#dc3545}
+    .muted{color:#91a0b6}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quản lý tài khoản</h1>
+    <p class="muted">Tối đa 2 tài khoản. Hiện có <strong th:text="${count}">0</strong> tài khoản.</p>
+    <div th:if="${error}" style="color:#dc3545;margin:10px 0;padding:8px;background:rgba(220,53,69,0.1);border-radius:4px" th:text="${error}">Error message</div>
+    <div th:if="${success}" style="color:#28a745;margin:10px 0;padding:8px;background:rgba(40,167,69,0.1);border-radius:4px" th:text="${success}">Success message</div>
+    <p><a href="/dashboard" class="btn">← Về Dashboard</a></p>
+    <div th:if="${count > 1}" style="margin:20px 0;">
+      <form th:action="@{/admin/users/delete-admin}" method="post" style="display:inline">
+        <button class="btn danger" onclick="return confirm('Xóa tài khoản admin@example.com?')">🗑️ Xóa tài khoản Admin</button>
+      </form>
+    </div>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Email</th><th>Hành động</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="u : ${users}">
+          <td th:text="${u.id}">1</td>
+          <td th:text="${u.email}">email@example.com</td>
+          <td>
+            <form th:action="@{|/admin/users/${u.id}/delete|}" method="post" th:if="${count > 1}">
+              <button class="btn danger" onclick="return confirm('Xóa tài khoản này?')">Xóa</button>
+            </form>
+            <span th:if="${count <= 1}" class="muted">Cần ít nhất 1 tài khoản</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
+
+
+
+

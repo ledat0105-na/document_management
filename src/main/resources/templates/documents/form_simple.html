@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Quản lý Văn bản</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel: #111831;
+      --muted: #91a0b6;
+      --text: #e7ecf5;
+      --brand: #6ea8ff;
+      --brand-2: #9df2d2;
+      --line: rgba(255,255,255,.08);
+      --danger: #ff6b6b;
+      --warning: #ffb86b;
+      --success: #3bd28f;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:linear-gradient(120deg,var(--bg) 30%,#0a1a2a 100%);
+    }
+    .app{display:grid;grid-template-columns:300px 1fr;gap:20px;min-height:100vh;padding:20px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .sidebar{padding:18px}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .brand .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .brand h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.3px}
+    .brand a{color:var(--text);text-decoration:none}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#0e1530;color:var(--text);text-decoration:none;font-weight:600;cursor:pointer}
+    .btn:hover{border-color:#26406c}
+    .btn.primary{background:linear-gradient(135deg,#246bff, #15c2a7);border-color:transparent}
+    .btn.ghost{background:transparent}
+
+    .section-title{margin:18px 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+    .menu{display:grid;gap:6px}
+    .menu a{padding:10px 12px;border-radius:10px;color:var(--text);text-decoration:none;display:flex;align-items:center;justify-content:space-between;border:1px solid transparent}
+    .menu a:hover{background:#0f1731;border-color:var(--line)}
+    .badge{font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+
+    .content{padding:20px}
+    .form-container{max-width:800px;margin:0 auto}
+    .form-header{margin-bottom:32px;text-align:center}
+    .form-header h2{font-size:24px;margin:0 0 8px;font-weight:600}
+    .form-header p{color:var(--muted);margin:0}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+    @media (max-width:768px){.form-grid{grid-template-columns:1fr}}
+
+    .field{display:grid;gap:8px}
+    .field.full{grid-column:1/-1}
+    label{font-size:14px;font-weight:500;color:var(--text)}
+    input[type="text"], input[type="file"], textarea{
+      width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:#0e1530;color:var(--text);font-size:14px
+    }
+    input[type="text"]:focus, textarea:focus{
+      outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(110,168,255,.1)
+    }
+    input[type="file"]{
+      padding:8px 12px;background:#0f1731;border:2px dashed var(--line);cursor:pointer
+    }
+    input[type="file"]:hover{border-color:var(--brand)}
+    textarea{min-height:120px;resize:vertical;font-family:inherit}
+
+    .form-actions{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--line)}
+    .form-actions .btn-group{display:flex;gap:12px}
+
+    .file-preview{margin-top:12px;padding:12px;background:#0f1731;border-radius:8px;border:1px solid var(--line)}
+    .file-preview .file-info{display:flex;align-items:center;gap:8px}
+    .file-preview .file-icon{width:32px;height:32px;border-radius:6px;background:var(--brand);display:grid;place-items:center;color:white;font-weight:600}
+    .file-preview .file-details{flex:1}
+    .file-preview .file-name{font-weight:500;margin-bottom:2px}
+    .file-preview .file-size{font-size:12px;color:var(--muted)}
+
+    .upload-area{
+      border:2px dashed var(--line);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s
+    }
+    .upload-area:hover{border-color:var(--brand);background:rgba(110,168,255,.05)}
+    .upload-area.dragover{border-color:var(--brand);background:rgba(110,168,255,.1)}
+    .upload-icon{font-size:48px;color:var(--muted);margin-bottom:16px}
+    .upload-text{font-size:16px;margin-bottom:8px;color:var(--text)}
+    .upload-hint{font-size:14px;color:var(--muted)}
+
+    
+    .i{font-style:normal;display:inline-block;line-height:1}
+    .i.add::before{content:"＋"}
+    .i.edit::before{content:"✎"}
+    .i.delete::before{content:"🗑"}
+    .i.download::before{content:"⬇"}
+    .i.search::before{content:"⌕"}
+    .i.upload::before{content:"📤"}
+
+    
+    .hint{padding:10px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="navbar" style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,30,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:12px;justify-content:space-between">
+    <div class="left" style="display:flex;align-items:center;gap:12px;flex:1">
+      <a href="/documents" class="btn"><span class="i upload"></span>Quay lại</a>
+      <div class="brand"><span class="dot"></span><a href="/documents">DocManager</a></div>
+    </div>
+    <div class="center" id="clock" style="color:var(--text);font-size:12px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;backdrop-filter:blur(6px);min-width:230px;text-align:center;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.15)"><span class="cal" style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:inline-grid;place-items:center;color:#072042;font-weight:700">📅</span><span class="time">--:--</span></div>
+    <div class="right" style="display:flex;align-items:center;gap:10px">
+      <div class="theme-dots">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#8e9eab,#eef2f3)" onclick="setTheme('default')" title="Mặc định"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#3aa0ff,#7de3ff)" onclick="setTheme('ocean')" title="Ocean"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#29d9a1,#9df2d2)" onclick="setTheme('emerald')" title="Emerald"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#2ec27e,#a3f7c1)" onclick="setTheme('forest')" title="Forest"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#985BFF,#ff8bd1)" onclick="setTheme('violet')" title="Violet"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#ff5c9a,#ff98c0)" onclick="setTheme('rose')" title="Rose"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#ff7a50,#ffc36e)" onclick="setTheme('sunset')" title="Sunset"></div>
+        <div class="theme-dot" style="background:linear-gradient(135deg,#ffbb33,#ffe06e)" onclick="setTheme('gold')" title="Gold"></div>
+        <div class="theme-dot" onclick="setTheme('auto')" title="Tự động (7 ngày)" style="background:conic-gradient(#3aa0ff,#29d9a1,#2ec27e,#985BFF,#ff5c9a,#ff7a50,#ffbb33,#3aa0ff)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="app" style="padding-top:80px">
+    
+    <aside class="sidebar card">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1><a href="/documents">DocManager</a></h1>
+      </div>
+      <a href="/documents" class="btn primary"><span class="i add"></span>Quay lại</a>
+
+      <div class="section-title">Danh mục</div>
+      <nav class="menu">
+        <a href="/documents">Tất cả <span class="badge" th:text="${totalDocs}">0</span></a>
+        <a th:href="@{/documents(showFolders=true)}">Thư mục <span class="badge" th:text="${folderTotal}">0</span></a>
+        <a href="/documents?category=archived">Lưu trữ <span class="badge" th:text="${archivedDocs}">0</span></a>
+      </nav>
+
+      <div class="section-title">Hành động nhanh</div>
+      <div class="menu">
+        <a href="/documents">Tải lên tệp <span class="badge">.pdf .docx</span></a>
+        <a href="/documents/export/all">Xuất ZIP <span class="badge">toàn bộ</span></a>
+      </div>
+
+      <div class="hint">Hệ thống quản lý tài liệu file-based. Không cần database.</div>
+    </aside>
+
+    
+    <main class="content card">
+      <div class="form-container">
+        <div class="form-header">
+          <h2>Thêm tài liệu mới</h2>
+          <p>Upload và quản lý tài liệu của bạn</p>
+        </div>
+
+        <form method="post" th:action="@{/documents}" enctype="multipart/form-data">
+          <div class="form-grid">
+            <div class="field">
+              <label for="title">Tiêu đề *</label>
+              <input type="text" id="title" name="title" th:value="${title}" required placeholder="Nhập tiêu đề tài liệu"/>
+            </div>
+            
+            <div class="field">
+              <label for="description">Mô tả</label>
+              <input type="text" id="description" name="description" th:value="${description}" placeholder="Mô tả ngắn gọn"/>
+            </div>
+
+            <div class="field">
+              <label>Thư mục/nhóm</label>
+              <select name="categorySelect">
+                <option value="">-- Chọn mục có sẵn --</option>
+                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="categoryNew">Hoặc thêm mục mới</label>
+              <input type="text" id="categoryNew" name="categoryNew" placeholder="VD: Quan trọng"/>
+            </div>
+            
+            <div class="field full">
+              <label for="file">Chọn tệp *</label>
+              <div class="upload-area" onclick="document.getElementById('file').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Kéo thả tệp vào đây hoặc bấm để chọn</div>
+                <div class="upload-hint">Hỗ trợ tất cả định dạng tệp: PDF, DOCX, XLSX, TXT, v.v.</div>
+              </div>
+              <input type="file" id="file" name="file" required style="display:none" onchange="showFilePreview(this)"/>
+              
+              <div id="filePreview" class="file-preview" style="display:none">
+                <div class="file-info">
+                  <div class="file-icon" id="fileIcon">📄</div>
+                  <div class="file-details">
+                    <div class="file-name" id="fileName"></div>
+                    <div class="file-size" id="fileSize"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <div>
+              <small style="color:var(--muted)">* Trường bắt buộc</small>
+            </div>
+            <div class="btn-group">
+              <a href="/documents" class="btn ghost">Hủy</a>
+              <button type="submit" class="btn primary">
+                <span class="i upload"></span>Tải lên
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Theme handling sync
+    function setTheme(name){
+      const root = document.documentElement;
+      if(name === 'default'){
+        root.removeAttribute('data-theme');
+      } else if(name === 'auto'){
+        const themes = ['ocean','emerald','forest','violet','rose','sunset','gold'];
+        const day = new Date().getDay();
+        const theme = themes[day % themes.length];
+        root.setAttribute('data-theme', theme);
+      } else {
+        root.setAttribute('data-theme', name);
+      }
+      localStorage.setItem('dm_theme', name);
+    }
+    (function(){
+      const saved = localStorage.getItem('dm_theme') || 'auto';
+      setTheme(saved);
+      function updateClock(){
+        const now = new Date();
+        const days = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+        const pad = n => String(n).padStart(2,'0');
+        const text = `${days[now.getDay()]} ${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} · ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        const el = document.getElementById('clock');
+        if(el){ const timeSpan = el.querySelector('.time'); if(timeSpan) timeSpan.textContent = text; }
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+    })();
+    function showFilePreview(input) {
+      const preview = document.getElementById('filePreview');
+      const fileName = document.getElementById('fileName');
+      const fileSize = document.getElementById('fileSize');
+      const fileIcon = document.getElementById('fileIcon');
+      
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        
+        // Set icon based on file type
+        const extension = file.name.split('.').pop().toLowerCase();
+        const iconMap = {
+          'pdf': '📕',
+          'doc': '📘', 'docx': '📘',
+          'xls': '📗', 'xlsx': '📗',
+          'txt': '📄',
+          'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️',
+          'zip': '🗜️', 'rar': '🗜️'
+        };
+        fileIcon.textContent = iconMap[extension] || '📄';
+        
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+    
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Drag and drop functionality
+    const uploadArea = document.querySelector('.upload-area');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight(e) {
+      uploadArea.classList.add('dragover');
+    }
+    
+    function unhighlight(e) {
+      uploadArea.classList.remove('dragover');
+    }
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        document.getElementById('file').files = files;
+        showFilePreview(document.getElementById('file'));
+      }
+    }
+  </script>
+</body>
+</html>
+
+

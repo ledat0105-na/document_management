@@ -1,0 +1,162 @@
+========================================
+    HƯỚNG DẪN CHI TIẾT - CHẠY VỚI MYSQL
+    DOCUMENT MANAGEMENT SYSTEM
+========================================
+
+🎯 KHÁCH HÀNG ĐÃ CÓ MYSQL - HƯỚNG DẪN TỪNG BƯỚC
+
+========================================
+    BƯỚC 1: KIỂM TRA YÊU CẦU
+========================================
+
+✅ YÊU CẦU HỆ THỐNG:
+- Windows 10/11
+- Java 17+ (kiểm tra: java -version)
+- MySQL Server đang chạy
+- Port 8080 trống
+
+🔍 KIỂM TRA JAVA:
+1. Mở Command Prompt (cmd)
+2. Gõ: java -version
+3. Nếu chưa có Java: Tải từ https://adoptium.net/
+
+========================================
+    BƯỚC 2: CHUẨN BỊ MYSQL
+========================================
+
+🗄️ CHUẨN BỊ DATABASE:
+1. Mở MySQL Workbench hoặc Command Line
+2. Chạy lệnh tạo database:
+   CREATE DATABASE document_management;
+3. Hoặc để ứng dụng tự tạo (khuyến nghị)
+
+📋 THÔNG TIN MYSQL CẦN THIẾT:
+- Host: localhost
+- Port: 3306
+- Username: root
+- Password: lambieng (hoặc password MySQL của bạn)
+
+========================================
+    BƯỚC 3: CẤU HÌNH ỨNG DỤNG
+========================================
+
+🔧 CHỌN CẤU HÌNH MYSQL:
+1. Double-click file: switch_to_mysql.bat
+2. Hoặc copy file application_mysql.properties thành application.properties
+
+📝 KIỂM TRA CẤU HÌNH:
+- Mở file application.properties
+- Kiểm tra các dòng:
+  spring.datasource.username=root
+  spring.datasource.password=lambieng
+- Nếu password MySQL khác, sửa lại cho đúng
+
+========================================
+    BƯỚC 4: CHẠY ỨNG DỤNG
+========================================
+
+🚀 CHẠY ỨNG DỤNG:
+1. Double-click file: start_app_simple.bat
+2. Đợi thông báo "Started DocumentManagementApplication"
+3. Mở trình duyệt: http://localhost:8080
+
+📱 HOẶC CHẠY BẰNG COMMAND LINE:
+1. Mở Command Prompt trong thư mục ứng dụng
+2. Gõ: java -jar document_management-0.0.1-SNAPSHOT.jar
+3. Đợi khởi động xong
+4. Mở trình duyệt: http://localhost:8080
+
+========================================
+    BƯỚC 5: ĐĂNG NHẬP
+========================================
+
+👤 TÀI KHOẢN ADMIN MẶC ĐỊNH:
+- Email: admin@example.com
+- Password: admin123
+
+🔐 SAU KHI ĐĂNG NHẬP:
+- Đổi password admin
+- Tạo tài khoản người dùng mới
+- Bắt đầu sử dụng hệ thống
+
+========================================
+    XỬ LÝ LỖI THƯỜNG GẶP
+========================================
+
+❌ LỖI: "Unable to access jarfile"
+✅ GIẢI PHÁP: 
+- Đảm bảo file jar ở đúng thư mục
+- Chạy Command Prompt trong thư mục chứa file jar
+
+❌ LỖI: "Cannot connect to MySQL"
+✅ GIẢI PHÁP:
+- Kiểm tra MySQL Server đang chạy
+- Kiểm tra username/password trong application.properties
+- Kiểm tra port 3306 không bị block
+
+❌ LỖI: "Access denied for user 'root'"
+✅ GIẢI PHÁP:
+- Kiểm tra password MySQL
+- Thử reset password MySQL
+- Hoặc tạo user mới trong MySQL
+
+❌ LỖI: "Port 8080 already in use"
+✅ GIẢI PHÁP:
+- Đóng ứng dụng khác đang dùng port 8080
+- Hoặc sửa port trong application.properties
+
+❌ LỖI: "Database does not exist"
+✅ GIẢI PHÁP:
+- Tạo database: CREATE DATABASE document_management;
+- Hoặc để ứng dụng tự tạo
+
+========================================
+    CÁCH KIỂM TRA KẾT NỐI MYSQL
+========================================
+
+🔍 TEST KẾT NỐI MYSQL:
+1. Mở MySQL Workbench
+2. Tạo connection mới:
+   - Host: localhost
+   - Port: 3306
+   - Username: root
+   - Password: lambieng
+3. Test connection
+4. Nếu thành công, MySQL đã sẵn sàng
+
+📋 HOẶC DÙNG COMMAND LINE:
+1. Mở Command Prompt
+2. Gõ: mysql -u root -p
+3. Nhập password: lambieng
+4. Nếu vào được MySQL, kết nối OK
+
+========================================
+    CẤU TRÚC THƯ MỤC
+========================================
+
+📁 CÁC FILE QUAN TRỌNG:
+- document_management-0.0.1-SNAPSHOT.jar : File ứng dụng chính
+- application.properties                : Cấu hình database
+- application_mysql.properties          : Cấu hình MySQL
+- start_app_simple.bat                 : Chạy ứng dụng
+- switch_to_mysql.bat                  : Chuyển sang MySQL
+- storage/                             : Thư mục lưu file upload
+
+========================================
+    LIÊN HỆ HỖ TRỢ
+========================================
+
+🆘 NẾU VẪN GẶP LỖI:
+- Chụp màn hình lỗi
+- Gửi log lỗi (nếu có)
+- Liên hệ nhà phát triển
+
+📞 THÔNG TIN CẦN CUNG CẤP:
+- Phiên bản Windows
+- Phiên bản Java (java -version)
+- Phiên bản MySQL
+- Thông báo lỗi cụ thể
+
+========================================
+    CHÚC BẠN THÀNH CÔNG!
+========================================

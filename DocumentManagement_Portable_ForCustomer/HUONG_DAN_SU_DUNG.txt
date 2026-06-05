@@ -1,0 +1,53 @@
+========================================
+    HƯỚNG DẪN SỬ DỤNG
+    DOCUMENT MANAGEMENT SYSTEM
+    (PHIÊN BẢN PORTABLE)
+========================================
+
+🚀 CÁCH SỬ DỤNG (CỰC KỲ ĐƠN GIẢN):
+
+1. Chạy file: start_app_portable.bat
+2. Đợi ứng dụng khởi động (lần đầu có thể mất 1-2 phút)
+3. Mở trình duyệt và truy cập: http://localhost:8080
+4. Sử dụng ứng dụng bình thường
+
+📋 YÊU CẦU:
+- Windows 10/11
+- Kết nối Internet (chỉ lần đầu để tải Java)
+- Không cần cài đặt gì thêm!
+
+🔧 CẤU HÌNH DATABASE:
+- Ứng dụng sử dụng H2 database (không cần cài đặt)
+- Dữ liệu tự động lưu trong thư mục 'data/'
+- Không cần cấu hình gì thêm
+
+📁 CẤU TRÚC THƯ MỤC:
+- start_app_portable.bat    : Chạy ứng dụng
+- download_jre.bat          : Tải Java (tự động)
+- application.properties    : Cấu hình (không cần sửa)
+- jre/                     : Java Runtime (tự động tải)
+- data/                    : Database (tự động tạo)
+- storage/                 : File upload (tự động tạo)
+
+🌐 TRUY CẬP:
+- URL: http://localhost:8080
+- Port: 8080
+- Không cần cài đặt gì!
+
+⚠️ LƯU Ý:
+- Lần đầu chạy sẽ tải Java (~100MB)
+- Đảm bảo có kết nối Internet lần đầu
+- Không xóa thư mục 'data/' (chứa dữ liệu)
+- Không xóa thư mục 'jre/' (chứa Java)
+
+🆘 XỬ LÝ LỖI:
+- Nếu không chạy được: Kiểm tra kết nối Internet
+- Nếu port 8080 bị chiếm: Đóng ứng dụng khác đang dùng port này
+- Nếu lỗi Java: Chạy lại download_jre.bat
+
+📞 HỖ TRỢ:
+Liên hệ nhà phát triển nếu cần hỗ trợ.
+
+========================================
+    CHÚC BẠN SỬ DỤNG VUI VẺ!
+========================================

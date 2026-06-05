@@ -1,0 +1,12 @@
+<div th:fragment="pagination(page)" class="pagination">
+  <a th:if="${!page.first}" th:href="@{|?page=${page.number-1}|}">← Trước</a>
+  <span th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+    <a th:if="${i != page.number}" th:href="@{|?page=${i}|}" th:text="${i + 1}">1</a>
+    <span th:if="${i == page.number}" class="current" th:text="${i + 1}">1</span>
+  </span>
+  <a th:if="${!page.last}" th:href="@{|?page=${page.number+1}|}">Sau →</a>
+</div>
+
+
+
+

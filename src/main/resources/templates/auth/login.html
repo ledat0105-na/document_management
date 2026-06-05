@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Đăng nhập</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;display:grid;place-items:center;height:100vh;background:#0b1020;font-family:Inter,system-ui;-webkit-font-smoothing:antialiased}
+    .card{width:100%;max-width:420px;background:#111831;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;color:#e7ecf5}
+    h1{margin:0 0 12px 0;font-size:22px}
+    .muted{color:#91a0b6}
+    .group{display:grid;gap:6px;margin:10px 0}
+    input{background:#0e1530;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;color:#e7ecf5}
+    button{background:linear-gradient(135deg,#246bff,#15c2a7);border:0;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;width:100%;font-weight:700}
+    a{color:#9fd0ff;text-decoration:none}
+    .row{display:flex;justify-content:space-between;align-items:center}
+    .alert{background:#3a2a2a;border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:10px;color:#ffd0d0;margin:10px 0}
+  </style>
+  <link rel="icon" href="data:,">
+  <meta name="robots" content="noindex">
+  <meta http-equiv="Cache-Control" content="no-store"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <meta http-equiv="Permissions-Policy" content="interest-cohort=()"/>
+  <meta http-equiv="X-Frame-Options" content="DENY"/>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+  <meta http-equiv="Referrer-Policy" content="no-referrer"/>
+</head>
+<body>
+  <div class="card">
+    <h1>Đăng nhập DocManager</h1>
+    <p class="muted">Chỉ quản trị viên được phép truy cập.</p>
+    <div th:if="${userCount == 0}" class="alert" style="color:#ffd0a7;background:#3a2a1a">
+      <h3 style="margin:0 0 8px 0;color:#ff7a50">⚠️ Cần đăng ký tài khoản</h3>
+      <p style="margin:0 0 12px 0">Chưa có tài khoản nào trong hệ thống. Vui lòng đăng ký tài khoản để sử dụng quản lý tài liệu.</p>
+      <div style="background:#0e1530;border:1px solid rgba(255,255,255,.08);padding:8px;border-radius:6px;margin:8px 0">
+        <p style="margin:0;font-size:12px;color:#91a0b6">
+          <strong>Lưu ý:</strong> Chỉ giới hạn đăng ký tối đa 2 tài khoản.
+        </p>
+      </div>
+    </div>
+    <div th:if="${param.error}" class="alert">Sai tài khoản hoặc mật khẩu.</div>
+    <div th:if="${param.logout}" class="alert" style="color:#a7ffd0;background:#113f2a">Bạn đã đăng xuất.</div>
+    <div th:if="${param.expired}" class="alert" style="color:#ffd0a7;background:#3a2a1a">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</div>
+    <form th:action="@{/login}" method="post">
+      <div class="group">
+        <label>Email</label>
+        <input type="text" name="username" autocomplete="username" required>
+      </div>
+      <div class="group">
+        <label>Mật khẩu</label>
+        <div style="position:relative">
+          <input type="password" name="password" id="password" autocomplete="current-password" required style="padding-right:32px">
+          <button type="button" onclick="togglePassword()" aria-label="Hiện/ẩn mật khẩu" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:#91a0b6;cursor:pointer;font-size:14px;width:24px;height:24px;line-height:24px;text-align:center">👁️</button>
+        </div>
+      </div>
+      <div class="group" style="display:flex;align-items:center;gap:8px;margin:8px 0">
+        <input type="checkbox" id="remember" name="remember-me" style="width:auto;margin:0">
+        <label for="remember" style="margin:0;font-size:14px;color:#91a0b6">Ghi nhớ tên đăng nhập</label>
+      </div>
+      <button type="submit">Đăng nhập</button>
+    </form>
+    <div class="row" style="margin-top:12px;justify-content:space-between">
+      <a th:href="@{/forgot}">Quên mật khẩu?</a>
+      <a th:href="@{/register}" class="btn" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#0e1530;color:#e7ecf5;text-decoration:none">Đăng ký</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const button = event.target;
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        button.textContent = '🙈';
+      } else {
+        passwordInput.type = 'password';
+        button.textContent = '👁️';
+      }
+    }
+
+    // Load saved username on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedUsername = localStorage.getItem('rememberedUsername');
+      if (savedUsername) {
+        document.querySelector('input[name="username"]').value = savedUsername;
+        document.getElementById('remember').checked = true;
+      }
+    });
+
+    // Save username when form is submitted with remember checked
+    document.querySelector('form').addEventListener('submit', function() {
+      const rememberCheckbox = document.getElementById('remember');
+      const usernameInput = document.querySelector('input[name="username"]');
+      
+      if (rememberCheckbox.checked) {
+        localStorage.setItem('rememberedUsername', usernameInput.value);
+      } else {
+        localStorage.removeItem('rememberedUsername');
+      }
+    });
+  </script>
+</body>
+</html>
+
+
